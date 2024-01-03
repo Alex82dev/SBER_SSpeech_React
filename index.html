@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>"AI NEMTYREV</title>
+</head>
+<body>
+    <h1>Synthesis SBER </h1>
+    <form id="synthesizeForm" action="/synthesize" method="POST">
+        <label for="token">Token:</label>
+        <input type="text" id="token" name="token" required><br><br>
+        <label for="text">Text:</label><br>
+        <textarea id="text" name="text" rows="4" cols="50" required></textarea><br><br>
+        <label for="output_file">Output File:</label>
+        <input type="text" id="output_file" name="output_file" required><br><br>
+        <input type="submit" value="Synthesize">
+    </form>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#synthesizeForm').submit(function(event) {
+                event.preventDefault();
+                var token = $('#token').val();
+                var text = $('#text').val();
+                var output_file = $('#output_file').val();
+                var data = {
+                    token: token,
+                    text: text,
+                    output_file: output_file
+                };
+                $.ajax({
+                    type: 'POST',
+                    url: '/synthesize',
+                    data: JSON.stringify(data),
+                    contentType: 'application/json',
+                    success: function(response) {
+                        alert('Synthesis successful!');
+                    },
+                    error: function(error) {
+                        alert('Synthesis failed: ' + error.responseJSON.message);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

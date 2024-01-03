@@ -12,7 +12,7 @@ def synthesize():
 
     # Выполнение команды синтеза речи
     command = f'python3 synthesize.py --token "{token}" --file "{output_file}" --text "{text}"'
-    subprocess.run(command, shell=True)
+    subprocess.run(command, shell=True, check=True)
 
     # Возвращение результата
     return jsonify({'success': True})

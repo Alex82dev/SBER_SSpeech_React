@@ -3,8 +3,7 @@ import argparse
 import grpc
 import time
 
-from synthesize import Arguments, create_parser, ENCODING_OPUS
-
+from flask import Flask, render_template, request
 from synthesis_pb2 import AsyncSynthesisRequest
 from synthesis_pb2_grpc import SmartSpeechStub
 from storage_pb2 import UploadRequest, DownloadRequest
@@ -15,6 +14,7 @@ from task_pb2_grpc import SmartSpeechStub as TaskSmartSpeechStub
 SLEEP_TIME = 5
 CHUNK_SIZE = 4096
 
+app = Flask(__name__)
 
 def generate_chunks(path, chunk_size=CHUNK_SIZE):
     with open(path, 'rb') as f:
@@ -81,13 +81,34 @@ def synthesize_async(args):
     finally:
         channel.close()
 
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/synthesize', methods=['POST'])
+def synthesize():
+    host = request.form.get('host')
+    token = request.form.get('token')
+    text = request.form.get('text')
+    audio_encoding = request.form.get('audio_encoding')
+    voice = request.form.get('voice')
+    file = request.form.get('file')
+
+    args = argparse.Namespace(
+        host=host,
+        token=token,
+        text=text,
+        audio_encoding=audio_encoding,
+        voice=voice,
+        file=file
+    )
+
+    synthesize_async(args)
+
+    return render_template('success.html', file=file)
 
 def main():
-    parser = create_parser([ENCODING_OPUS])
-    Arguments.NOT_SYNTHESIS_OPTIONS.update({'text', 'audio_encoding', 'voice'})
-
-    synthesize_async(parser.parse_args(namespace=Arguments()))
-
+    app.run()
 
 if __name__ == '__main__':
     main()

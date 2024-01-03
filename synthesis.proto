@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+message SynthesisRequest {
+  string token = 1;
+  string text = 2;
+  string output_file = 3;
+}
+
+message SynthesisResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+service SynthesisService {
+  rpc Synthesize(SynthesisRequest) returns (SynthesisResponse);
+}
